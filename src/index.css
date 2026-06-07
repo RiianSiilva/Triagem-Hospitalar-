@@ -1,0 +1,18 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f0f4f8;
+  color: #1a202c;
+}
+
+/* Cores Manchester */
+.cor-vermelho { background-color: #e53e3e; color: white; }
+.cor-laranja  { background-color: #dd6b20; color: white; }
+.cor-amarelo  { background-color: #d69e2e; color: white; }
+.cor-verde    { background-color: #38a169; color: white; }
+.cor-azul     { background-color: #3182ce; color: white; }
