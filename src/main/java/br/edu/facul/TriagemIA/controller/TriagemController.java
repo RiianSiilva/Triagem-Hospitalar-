@@ -1,7 +1,7 @@
 package br.edu.facul.TriagemIA.controller;
 
-import br.edu.facul.TriagemIA.entidades.Paciente;
-import br.edu.facul.TriagemIA.entidades.Triagem;
+import br.edu.facul.TriagemIA.entity.Paciente;
+import br.edu.facul.TriagemIA.entity.Triagem;
 import br.edu.facul.TriagemIA.model.TriagemRequest;
 import br.edu.facul.TriagemIA.model.TriagemResponse;
 import br.edu.facul.TriagemIA.repository.PacienteRepository;

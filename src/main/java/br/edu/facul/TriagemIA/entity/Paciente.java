@@ -1,4 +1,4 @@
-package br.edu.facul.TriagemIA.entidades;
+package br.edu.facul.TriagemIA.entity;
 
 import jakarta.persistence.*;
 

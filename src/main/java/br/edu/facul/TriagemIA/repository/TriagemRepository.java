@@ -1,6 +1,6 @@
 package br.edu.facul.TriagemIA.repository;
 
-import br.edu.facul.TriagemIA.entidades.Triagem;
+import br.edu.facul.TriagemIA.entity.Triagem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
