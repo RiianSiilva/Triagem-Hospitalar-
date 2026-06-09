@@ -1,0 +1,128 @@
+.home-container {
+  min-height: 100vh;
+  background: #f0f4f8;
+  padding: 2rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  background: white;
+  padding: 1.2rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.home-header h1 { font-size: 1.4rem; color: #1a365d; }
+.home-header p  { color: #718096; font-size: 0.9rem; margin-top: 0.2rem; }
+
+.btn-sair {
+  padding: 0.5rem 1rem;
+  background: white;
+  color: #e53e3e;
+  border: 2px solid #e53e3e;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-sair:hover { background: #fff5f5; }
+
+/* Aviso IA */
+.aviso-ia {
+  display: flex;
+  gap: 1rem;
+  background: #fffbeb;
+  border: 2px solid #f6ad55;
+  border-radius: 12px;
+  padding: 1.2rem;
+  margin-bottom: 1.5rem;
+  align-items: flex-start;
+}
+
+.aviso-ia-icone { font-size: 2rem; }
+
+.aviso-ia-texto h3 {
+  color: #c05621;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.aviso-ia-texto p {
+  color: #744210;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+/* Card triagem */
+.home-card-triagem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: linear-gradient(135deg, #1a365d, #2a69ac);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 20px rgba(26,54,93,0.3);
+  transition: transform 0.2s;
+}
+
+.home-card-triagem:hover { transform: translateY(-2px); }
+
+.card-triagem-icone { font-size: 2.5rem; }
+
+.home-card-triagem h2 { font-size: 1.2rem; margin-bottom: 0.3rem; }
+.home-card-triagem p  { font-size: 0.85rem; opacity: 0.85; }
+
+.card-seta {
+  margin-left: auto;
+  font-size: 1.5rem;
+  opacity: 0.7;
+}
+
+/* Protocolo */
+.home-protocolo {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.home-protocolo h3 {
+  color: #2d3748;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.protocolo-lista { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.protocolo-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.protocolo-item.vermelho { background: #fff5f5; color: #c53030; }
+.protocolo-item.laranja  { background: #fffaf0; color: #c05621; }
+.protocolo-item.amarelo  { background: #fffff0; color: #b7791f; }
+.protocolo-item.verde    { background: #f0fff4; color: #276749; }
+.protocolo-item.azul     { background: #ebf8ff; color: #2b6cb0; }
+
+/* Rodapé */
+.home-rodape {
+  text-align: center;
+  color: #a0aec0;
+  font-size: 0.8rem;
+  line-height: 1.8;
+}
