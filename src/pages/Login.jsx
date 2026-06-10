@@ -10,7 +10,7 @@ function Login() {
   const [erro, setErro] = useState(null)
 
   const [form, setForm] = useState({
-    nome: '', email: '', senha: ''
+    nome: '', email: '', senha: '', cpf: ''
   })
 
   async function handleLogin() {
@@ -26,6 +26,7 @@ function Login() {
       localStorage.setItem('usuario', JSON.stringify(data))
 
       if (data.perfil === 'PACIENTE') navigate('/home')
+      else if (data.perfil === 'ADMIN') navigate ('/admin')
       else navigate('/painel')
 
     } catch (e) {
@@ -42,7 +43,8 @@ function Login() {
       const { data } = await api.post('/auth/cadastro/paciente', {
         nome: form.nome,
         email: form.email,
-        senha: form.senha
+        senha: form.senha,
+        cpf: form.cpf
       })
 
       localStorage.setItem('token', data.token)
@@ -92,6 +94,18 @@ function Login() {
                 onChange={e => setForm({...form, nome: e.target.value})}
               />
             </div>
+          )}
+
+          {aba === 'cadastro' && (
+            <div className="campo">
+             <label>CPF</label>
+             <input
+              type="text"
+              placeholder="000.000.000-00"
+              value={form.cpf}
+              onChange={e => setForm({...form, cpf: e.target.value})}
+            />
+          </div>
           )}
 
           <div className="campo">
