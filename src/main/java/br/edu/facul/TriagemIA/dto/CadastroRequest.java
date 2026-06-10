@@ -4,5 +4,6 @@ public record CadastroRequest(
         String nome,
         String email,
         String senha,
-        String perfil
+        String perfil,
+        String cpf
 ) { }

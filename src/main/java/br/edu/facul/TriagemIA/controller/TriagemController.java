@@ -142,6 +142,15 @@ public class TriagemController {
         return ResponseEntity.ok(pacienteRepository.findAll());
     }
 
+    // Busca triagens pelo CPF do paciente
+    @GetMapping("/historico/{cpf}")
+    public ResponseEntity<List<Triagem>> getHistoricoPorCpf(@PathVariable String cpf) {
+        return pacienteRepository.findByCpf(cpf)
+                .map(p -> ResponseEntity.ok(
+                        triagemRepository.findByPacienteIdOrderByDataTriagemDesc(p.getId())
+                ))
+                .orElse(ResponseEntity.notFound().build());
+    }
 
 
 

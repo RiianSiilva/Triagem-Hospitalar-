@@ -23,6 +23,10 @@ public class Usuario {
     @Column(nullable = false)
     private Perfil perfil;
 
+    @OneToOne
+    @JoinColumn(name = "paciente_id")
+    private  Paciente paciente;
+
     public enum Perfil {
         PACIENTE, ENFERMEIRA, MEDICO, ADMIN
     }
@@ -66,5 +70,7 @@ public class Usuario {
     public void setPerfil(Perfil perfil) {
         this.perfil = perfil;
     }
+    public Paciente getPaciente() { return paciente; }
+    public void setPaciente(Paciente paciente) { this.paciente = paciente; }
 
 }

@@ -4,11 +4,13 @@ import br.edu.facul.TriagemIA.dto.AuthResponse;
 import br.edu.facul.TriagemIA.dto.CadastroRequest;
 import br.edu.facul.TriagemIA.dto.LoginRequest;
 import br.edu.facul.TriagemIA.entity.Usuario;
+import br.edu.facul.TriagemIA.repository.PacienteRepository;
 import br.edu.facul.TriagemIA.repository.UsuarioRepository;
 import br.edu.facul.TriagemIA.security.JwtService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import br.edu.facul.TriagemIA.entity.Paciente;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -16,25 +18,32 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
+    private final PacienteRepository pacienteRepository;
     private final JwtService jwtService;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public AuthController(UsuarioRepository usuarioRepository, JwtService jwtService) {
+    public AuthController(UsuarioRepository usuarioRepository, PacienteRepository pacienteRepository, JwtService jwtService) {
         this.usuarioRepository = usuarioRepository;
         this.jwtService = jwtService;
         this.passwordEncoder = new BCryptPasswordEncoder();
+        this.pacienteRepository = pacienteRepository;
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         return usuarioRepository.findByEmail(request.email())
                 .filter(u -> passwordEncoder.matches(request.senha(), u.getSenha()))
-                .map(u -> ResponseEntity.ok(new AuthResponse(
-                        jwtService.gerarToken(u.getEmail(), u.getPerfil().name()),
-                        u.getNome(),
-                        u.getEmail(),
-                        u.getPerfil().name()
-                )))
+                .map(u -> {
+                    String cpf = u.getPaciente() != null ? u.getPaciente().getCpf() : null;
+                    return ResponseEntity.ok(new AuthResponse(
+                            jwtService.gerarToken(u.getEmail(), u.getPerfil().name()),
+                            u.getNome(),
+                            u.getEmail(),
+                            u.getPerfil().name(),
+                            cpf
+                    ));
+
+                })
                 .orElse(ResponseEntity.status(401).build());
     }
 
@@ -44,18 +53,32 @@ public class AuthController {
             return ResponseEntity.status(409).build(); // email já existe
         }
 
+
+        // Cria ou busca o Paciente pelo CPF
+        Paciente paciente = pacienteRepository
+                .findByCpf(request.cpf())
+                .orElseGet(() -> {
+                    Paciente novo = new Paciente();
+                    novo.setNome(request.nome());
+                    novo.setCpf(request.cpf());
+                    return pacienteRepository.save(novo);
+                });
+
+
         Usuario usuario = new Usuario();
         usuario.setNome(request.nome());
         usuario.setEmail(request.email());
         usuario.setSenha(passwordEncoder.encode(request.senha()));
         usuario.setPerfil(Usuario.Perfil.PACIENTE);
+        usuario.setPaciente(paciente);
         usuarioRepository.save(usuario);
 
         return ResponseEntity.ok(new AuthResponse(
                 jwtService.gerarToken(usuario.getEmail(), usuario.getPerfil().name()),
                 usuario.getNome(),
                 usuario.getEmail(),
-                usuario.getPerfil().name()
+                usuario.getPerfil().name(),
+                paciente.getCpf()
         ));
     }
 
@@ -87,7 +110,8 @@ public class AuthController {
                 jwtService.gerarToken(usuario.getEmail(), usuario.getPerfil().name()),
                 usuario.getNome(),
                 usuario.getEmail(),
-                usuario.getPerfil().name()
+                usuario.getPerfil().name(),
+                null
         ));
     }
 }
