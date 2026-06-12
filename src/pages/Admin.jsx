@@ -19,9 +19,7 @@ function Admin() {
     nome: '', email: '', senha: '', perfil: 'MEDICO'
   })
 
-  useEffect(() => {
-    carregarDados()
-  }, [aba])
+  useEffect(() => { carregarDados() }, [aba])
 
   async function carregarDados() {
     setCarregando(true)
@@ -44,8 +42,7 @@ function Admin() {
   }
 
   async function cadastrarStaff() {
-    setErro(null)
-    setSucesso(null)
+    setErro(null); setSucesso(null)
     try {
       await api.post('/admin/cadastrar/staff', form)
       setSucesso(`${form.perfil} cadastrado com sucesso!`)
@@ -58,58 +55,48 @@ function Admin() {
   }
 
   async function deletarUsuario(id) {
-    if (!confirm('Tem certeza que deseja deletar este usuário?')) return
+    if (!confirm('Deletar este usuário?')) return
     try {
       await api.delete(`/admin/usuario/${id}`)
-      setSucesso('Usuário deletado!')
+      setSucesso('Usuário deletado.')
       carregarDados()
-    } catch (e) {
-      setErro('Erro ao deletar usuário.')
-    }
+    } catch (e) { setErro('Erro ao deletar.') }
   }
 
   async function deletarPaciente(id) {
     if (!confirm('Isso irá deletar o paciente e todas as suas triagens. Confirmar?')) return
     try {
       await api.delete(`/admin/paciente/${id}`)
-      setSucesso('Paciente e triagens deletados!')
+      setSucesso('Paciente e triagens deletados.')
       carregarDados()
-    } catch (e) {
-      setErro('Erro ao deletar paciente.')
-    }
+    } catch (e) { setErro('Erro ao deletar.') }
   }
 
   async function deletarTriagem(id) {
     if (!confirm('Deletar esta triagem?')) return
     try {
       await api.delete(`/admin/triagem/${id}`)
-      setSucesso('Triagem deletada!')
+      setSucesso('Triagem deletada.')
       carregarDados()
-    } catch (e) {
-      setErro('Erro ao deletar triagem.')
-    }
+    } catch (e) { setErro('Erro ao deletar.') }
   }
 
   async function limparTriagens() {
-    if (!confirm('Isso irá deletar TODAS as triagens. Confirmar?')) return
+    if (!confirm('Deletar TODAS as triagens?')) return
     try {
       await api.delete('/admin/limpar/triagens')
-      setSucesso('Todas as triagens foram deletadas!')
+      setSucesso('Todas as triagens deletadas.')
       carregarDados()
-    } catch (e) {
-      setErro('Erro ao limpar triagens.')
-    }
+    } catch (e) { setErro('Erro ao limpar.') }
   }
 
   async function limparTudo() {
-    if (!confirm('ATENÇÃO: Isso irá deletar TODOS os dados do sistema. Confirmar?')) return
+    if (!confirm('ATENÇÃO: Deletar TODOS os dados do sistema?')) return
     try {
       await api.delete('/admin/limpar/tudo')
-      setSucesso('Todos os dados foram deletados!')
+      setSucesso('Todos os dados deletados.')
       carregarDados()
-    } catch (e) {
-      setErro('Erro ao limpar dados.')
-    }
+    } catch (e) { setErro('Erro ao limpar.') }
   }
 
   function sair() {
@@ -119,184 +106,155 @@ function Admin() {
   }
 
   return (
-    <div className="admin-container">
+    <div className="admin-page">
 
-      <div className="admin-header">
-        <h1>⚙️ Painel Administrativo</h1>
+      <nav className="admin-navbar">
+        <div className="admin-navbar-logo">
+          <span className="admin-navbar-logo-badge">+</span>
+          <h1>TriagemIA</h1>
+          <span className="admin-navbar-tag">Administrador</span>
+        </div>
         <button className="btn-sair" onClick={sair}>Sair</button>
-      </div>
+      </nav>
 
-      {sucesso && <div className="admin-sucesso">✅ {sucesso}</div>}
-      {erro && <div className="admin-erro">❌ {erro}</div>}
+      <div className="admin-content">
 
-      {/* Abas */}
-      <div className="admin-abas">
-        {['usuarios', 'pacientes', 'triagens', 'cadastrar'].map(a => (
-          <button
-            key={a}
-            className={`admin-aba ${aba === a ? 'ativa' : ''}`}
-            onClick={() => { setAba(a); setSucesso(null); setErro(null) }}
-          >
-            {a === 'usuarios'  ? '👥 Usuários' :
-             a === 'pacientes' ? '🧑 Pacientes' :
-             a === 'triagens'  ? '📋 Triagens' :
-             '➕ Cadastrar Staff'}
-          </button>
-        ))}
-      </div>
+        {sucesso && <div className="admin-alerta admin-sucesso">{sucesso}</div>}
+        {erro    && <div className="admin-alerta admin-erro">{erro}</div>}
 
-      {/* Aba Usuários */}
-      {aba === 'usuarios' && (
-        <div className="admin-secao">
-          <h2>Usuários cadastrados</h2>
-          {carregando ? <p>Carregando...</p> : (
+        <div className="admin-abas">
+          {[
+            { id: 'usuarios',  label: 'Usuários' },
+            { id: 'pacientes', label: 'Pacientes' },
+            { id: 'triagens',  label: 'Triagens' },
+            { id: 'cadastrar', label: 'Cadastrar Staff' },
+          ].map(a => (
+            <button key={a.id}
+              className={`admin-aba ${aba === a.id ? 'ativa' : ''}`}
+              onClick={() => { setAba(a.id); setSucesso(null); setErro(null) }}>
+              {a.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Usuários */}
+        {aba === 'usuarios' && (
+          <div className="admin-secao">
+            <div className="admin-secao-header">
+              <h2>Usuários cadastrados</h2>
+            </div>
             <table className="admin-tabela">
               <thead>
-                <tr>
-                  <th>ID</th><th>Nome</th><th>Email</th><th>Perfil</th><th>Ação</th>
-                </tr>
+                <tr><th>ID</th><th>Nome</th><th>Email</th><th>Perfil</th><th>Ação</th></tr>
               </thead>
               <tbody>
                 {usuarios.map(u => (
                   <tr key={u.id}>
                     <td>{u.id}</td>
-                    <td>{u.nome}</td>
+                    <td style={{color:'white', fontWeight:'500'}}>{u.nome}</td>
                     <td>{u.email}</td>
                     <td><span className={`badge badge-${u.perfil.toLowerCase()}`}>{u.perfil}</span></td>
-                    <td>
-                      <button className="btn-deletar" onClick={() => deletarUsuario(u.id)}>
-                        🗑️ Deletar
-                      </button>
-                    </td>
+                    <td><button className="btn-deletar" onClick={() => deletarUsuario(u.id)}>Deletar</button></td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          )}
-        </div>
-      )}
+          </div>
+        )}
 
-      {/* Aba Pacientes */}
-      {aba === 'pacientes' && (
-        <div className="admin-secao">
-          <h2>Pacientes cadastrados</h2>
-          {carregando ? <p>Carregando...</p> : (
+        {/* Pacientes */}
+        {aba === 'pacientes' && (
+          <div className="admin-secao">
+            <div className="admin-secao-header">
+              <h2>Pacientes cadastrados</h2>
+            </div>
             <table className="admin-tabela">
               <thead>
-                <tr>
-                  <th>ID</th><th>Nome</th><th>CPF</th><th>Idade</th><th>Cadastro</th><th>Ação</th>
-                </tr>
+                <tr><th>ID</th><th>Nome</th><th>CPF</th><th>Cadastro</th><th>Ação</th></tr>
               </thead>
               <tbody>
                 {pacientes.map(p => (
                   <tr key={p.id}>
                     <td>{p.id}</td>
-                    <td>{p.nome}</td>
+                    <td style={{color:'white', fontWeight:'500'}}>{p.nome}</td>
                     <td>{p.cpf}</td>
-                    <td>{p.idade}</td>
-                    <td>{p.dataCadastro ? new Date(p.dataCadastro).toLocaleDateString('pt-BR') : '-'}</td>
-                    <td>
-                      <button className="btn-deletar" onClick={() => deletarPaciente(p.id)}>
-                        🗑️ Deletar
-                      </button>
-                    </td>
+                    <td>{p.dataCadastro ? new Date(p.dataCadastro).toLocaleDateString('pt-BR') : '—'}</td>
+                    <td><button className="btn-deletar" onClick={() => deletarPaciente(p.id)}>Deletar</button></td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          )}
-        </div>
-      )}
-
-      {/* Aba Triagens */}
-      {aba === 'triagens' && (
-        <div className="admin-secao">
-          <div className="admin-secao-header">
-            <h2>Triagens realizadas</h2>
-            <button className="btn-limpar" onClick={limparTriagens}>
-              🗑️ Limpar todas
-            </button>
           </div>
-          {carregando ? <p>Carregando...</p> : (
+        )}
+
+        {/* Triagens */}
+        {aba === 'triagens' && (
+          <div className="admin-secao">
+            <div className="admin-secao-header">
+              <h2>Triagens realizadas</h2>
+              <button className="btn-limpar" onClick={limparTriagens}>Limpar todas</button>
+            </div>
             <table className="admin-tabela">
               <thead>
-                <tr>
-                  <th>ID</th><th>Paciente</th><th>Cor</th><th>Sintomas</th><th>Data</th><th>Ação</th>
-                </tr>
+                <tr><th>ID</th><th>Paciente</th><th>Cor</th><th>Sintomas</th><th>Data</th><th>Ação</th></tr>
               </thead>
               <tbody>
                 {triagens.map(t => (
                   <tr key={t.id}>
                     <td>{t.id}</td>
-                    <td>{t.paciente?.nome}</td>
+                    <td style={{color:'white', fontWeight:'500'}}>{t.paciente?.nome}</td>
                     <td><span className={`badge cor-${t.cor?.toLowerCase()}`}>{t.cor}</span></td>
                     <td className="td-sintomas">{t.sintomas}</td>
                     <td>{new Date(t.dataTriagem).toLocaleDateString('pt-BR')}</td>
-                    <td>
-                      <button className="btn-deletar" onClick={() => deletarTriagem(t.id)}>
-                        🗑️
-                      </button>
-                    </td>
+                    <td><button className="btn-deletar" onClick={() => deletarTriagem(t.id)}>Deletar</button></td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          )}
-          <button className="btn-perigo" onClick={limparTudo}>
-            ⚠️ Limpar TODOS os dados do sistema
-          </button>
-        </div>
-      )}
-
-      {/* Aba Cadastrar */}
-      {aba === 'cadastrar' && (
-        <div className="admin-secao">
-          <h2>Cadastrar médico ou enfermeira</h2>
-          <div className="admin-form">
-            <div className="campo">
-              <label>Nome completo</label>
-              <input
-                type="text" placeholder="Nome"
-                value={form.nome}
-                onChange={e => setForm({...form, nome: e.target.value})}
-              />
-            </div>
-            <div className="campo">
-              <label>Email</label>
-              <input
-                type="email" placeholder="email@hospital.com"
-                value={form.email}
-                onChange={e => setForm({...form, email: e.target.value})}
-              />
-            </div>
-            <div className="campo">
-              <label>Senha</label>
-              <input
-                type="password" placeholder="Senha"
-                value={form.senha}
-                onChange={e => setForm({...form, senha: e.target.value})}
-              />
-            </div>
-            <div className="campo">
-              <label>Perfil</label>
-              <select
-                value={form.perfil}
-                onChange={e => setForm({...form, perfil: e.target.value})}
-              >
-                {PERFIS.map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
-            </div>
-            <button
-              className="btn-cadastrar"
-              onClick={cadastrarStaff}
-              disabled={!form.nome || !form.email || !form.senha}
-            >
-              Cadastrar
+            <button className="btn-perigo" onClick={limparTudo}>
+              Limpar TODOS os dados do sistema
             </button>
           </div>
-        </div>
-      )}
+        )}
 
+        {/* Cadastrar */}
+        {aba === 'cadastrar' && (
+          <div className="admin-secao">
+            <div className="admin-secao-header">
+              <h2>Cadastrar médico ou enfermeira</h2>
+            </div>
+            <div className="admin-form">
+              <div className="campo">
+                <label>Nome completo</label>
+                <input type="text" placeholder="Nome"
+                  value={form.nome} onChange={e => setForm({...form, nome: e.target.value})} />
+              </div>
+              <div className="campo">
+                <label>Email</label>
+                <input type="email" placeholder="email@hospital.com"
+                  value={form.email} onChange={e => setForm({...form, email: e.target.value})} />
+              </div>
+              <div className="campo">
+                <label>Senha</label>
+                <input type="password" placeholder="Senha"
+                  value={form.senha} onChange={e => setForm({...form, senha: e.target.value})} />
+              </div>
+              <div className="campo">
+                <label>Perfil</label>
+                <select value={form.perfil} onChange={e => setForm({...form, perfil: e.target.value})}>
+                  {PERFIS.map(p => <option key={p} value={p}>{p}</option>)}
+                </select>
+              </div>
+              <button className="btn-cadastrar"
+                onClick={cadastrarStaff}
+                disabled={!form.nome || !form.email || !form.senha}>
+                Cadastrar
+              </button>
+            </div>
+          </div>
+        )}
+
+      </div>
     </div>
   )
 }
