@@ -5,6 +5,9 @@ import Totem from './pages/Totem'
 import PainelMedico from './pages/PainelMedico'
 import Admin from './pages/Admin'
 import RotaProtegida from './components/RotaProtegida'
+import PerfilPaciente from './pages/PerfilPaciente'
+import Relatorio from './pages/Relatorio'
+
 
 function App() {
   return (
@@ -35,7 +38,26 @@ function App() {
           <Admin />
         </RotaProtegida>
       } />
-    </Routes>
+    
+     <Route path="/perfil" element={
+       <RotaProtegida perfisPermitidos={['PACIENTE']}>
+         <PerfilPaciente />
+         </RotaProtegida>
+       } />
+       
+      <Route path="/perfil" element={
+         <RotaProtegida perfisPermitidos={['PACIENTE']}>
+          <PerfilPaciente />
+          </RotaProtegida>
+       } />
+        
+      <Route path="/relatorio" element={
+           <RotaProtegida perfisPermitidos={['MEDICO', 'ENFERMEIRA', 'ADMIN']}>
+             <Relatorio />
+           </RotaProtegida>
+        } />
+       </Routes>
+    
   )
 }
 
