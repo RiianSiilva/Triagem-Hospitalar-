@@ -8,7 +8,7 @@ export function useAlertas() {
 
   useEffect(() => {
     const client = new Client({
-      webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+      webSocketFactory: () => new SockJS('https://triagem-hospitalar-production.up.railway.app/ws'),
       onConnect: () => {
         client.subscribe('/topic/alertas', (message) => {
           const alerta = JSON.parse(message.body)
