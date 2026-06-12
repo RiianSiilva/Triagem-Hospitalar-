@@ -2,7 +2,7 @@
   "name": "triagem-frontend",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://riiansilva.github.io/Triagem-Hospitalar-",
+  "homepage": "https://Riiansiilva.github.io/Triagem-Hospitalar-",
   "type": "module",
   "scripts": {
   "dev": "vite",
