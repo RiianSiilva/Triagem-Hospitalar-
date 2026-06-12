@@ -51,9 +51,13 @@ public class Triagem {
     @Column(name = "data_triagem")
     private LocalDateTime dataTriagem;
 
+    @Column
+    private String status;
+
     @PrePersist
     public void prePersist() {
         this.dataTriagem = LocalDateTime.now();
+        this.status = "AGUARDANDO";
     }
 
     public Long getId() {
@@ -175,5 +179,9 @@ public class Triagem {
     public void setDataTriagem(LocalDateTime dataTriagem) {
         this.dataTriagem = dataTriagem;
     }
+
+    public String getStatus() { return status; }
+
+    public void setStatus(String status) { this.status = status; }
 
 }

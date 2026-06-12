@@ -26,4 +26,6 @@ public interface TriagemRepository extends JpaRepository<Triagem,Long>{
     // findByCorOrderByDataTriagemDesc(String cor) SELECT * FROM triagens
     // WHERE cor = ?
     // ORDER BY data_triagem DESC
+
+
 }

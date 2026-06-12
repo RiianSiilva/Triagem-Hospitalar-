@@ -114,4 +114,55 @@ public class AuthController {
                 null
         ));
     }
+
+    // Busca perfil do usuário logado
+    @GetMapping("/perfil")
+    public ResponseEntity<AuthResponse> getPerfil(@RequestHeader("Authorization") String token) {
+        try {
+            String jwt = token.replace("Bearer ", "");
+            String email = jwtService.extrairEmail(jwt);
+            return usuarioRepository.findByEmail(email)
+                    .map(u -> {
+                        String cpf = u.getPaciente() != null ? u.getPaciente().getCpf() : null;
+                        return ResponseEntity.ok(new AuthResponse(
+                                null, u.getNome(), u.getEmail(), u.getPerfil().name(), cpf
+                        ));
+                    })
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(401).build();
+        }
+    }
+
+    // Atualiza perfil do usuário
+    @PutMapping("/perfil")
+    public ResponseEntity<AuthResponse> atualizarPerfil(
+            @RequestHeader("Authorization") String token,
+            @RequestBody CadastroRequest request) {
+        try {
+            String jwt = token.replace("Bearer ", "");
+            String email = jwtService.extrairEmail(jwt);
+            return usuarioRepository.findByEmail(email)
+                    .map(u -> {
+                        u.setNome(request.nome());
+                        if (request.senha() != null && !request.senha().isEmpty()) {
+                            u.setSenha(passwordEncoder.encode(request.senha()));
+                        }
+                        // Atualiza CPF no paciente vinculado
+                        if (u.getPaciente() != null && request.cpf() != null) {
+                            u.getPaciente().setCpf(request.cpf());
+                            pacienteRepository.save(u.getPaciente());
+                        }
+                        usuarioRepository.save(u);
+                        String cpf = u.getPaciente() != null ? u.getPaciente().getCpf() : null;
+                        return ResponseEntity.ok(new AuthResponse(
+                                null, u.getNome(), u.getEmail(), u.getPerfil().name(), cpf
+                        ));
+                    })
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(401).build();
+        }
+    }
+
 }

@@ -6,6 +6,7 @@ import br.edu.facul.TriagemIA.model.TriagemRequest;
 import br.edu.facul.TriagemIA.model.TriagemResponse;
 import br.edu.facul.TriagemIA.repository.PacienteRepository;
 import br.edu.facul.TriagemIA.repository.TriagemRepository;
+import br.edu.facul.TriagemIA.service.AlertaService;
 import br.edu.facul.TriagemIA.service.TriagemAiService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.ResponseEntity;
@@ -22,27 +23,28 @@ public class TriagemController {
     private final ObjectMapper objectMapper; // Uma ferramenta poderosa do Spring (da biblioteca Jackson). Ela serve para converter textos em formato JSON para objetos Java, e vice-versa.
     private final PacienteRepository pacienteRepository;
     private final TriagemRepository triagemRepository;
+    private final AlertaService alertaService;
 
-    public TriagemController(TriagemAiService triagemAiService, ObjectMapper objectMapper, PacienteRepository pacienteRepository, TriagemRepository triagemRepository) {
+    public TriagemController(TriagemAiService triagemAiService, ObjectMapper objectMapper, PacienteRepository pacienteRepository, TriagemRepository triagemRepository, AlertaService alertaService) {
         this.triagemAiService = triagemAiService;
         this.objectMapper = objectMapper;
         this.pacienteRepository = pacienteRepository;
         this.triagemRepository = triagemRepository;
+        this.alertaService = alertaService;
     }
 
     @PostMapping //Significa que este mtodo só aceita requisições do tipo POST (usado quando queremos enviar dados para o servidor processar).
     public ResponseEntity<TriagemResponse> realizarTriagem(@RequestBody TriagemRequest request) {
         try {
-            // buscar ou criar o paciente
+            // 1. Busca ou cria o paciente pelo CPF
             Paciente paciente = pacienteRepository
-                    .findByNomeIgnoreCase(request.nomePaciente())
-                    .orElseGet(() ->{
+                    .findByCpf(request.cpf())
+                    .orElseGet(() -> {
                         Paciente novo = new Paciente();
                         novo.setNome(request.nomePaciente());
-                        novo.setIdade(request.idade());
                         novo.setCpf(request.cpf());
+                        novo.setIdade(request.idade());
                         return pacienteRepository.save(novo);
-
                     });
 
             // Tente processar os dados e chamar o serviço de IA
@@ -87,6 +89,16 @@ public class TriagemController {
             triagem.setPressaoDiastolica(request.pressaoDiastolica());
             triagem.setSaturacaoO2(request.saturacaoO2());
             triagemRepository.save(triagem);
+
+            // Envia alerta em tempo real se for VERMELHO ou LARANJA
+            if (response.alertaUrgente()) {
+                alertaService.enviarAlerta(
+                        response.cor(),
+                        paciente.getNome(),
+                        String.join(", ", request.sintomas()),
+                        triagem.getId()
+                );
+            }
 
             // Se tudo der certo, o Spring ignora o 'catch' e envia o resultado
             return ResponseEntity.ok(response);
@@ -152,7 +164,30 @@ public class TriagemController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // Atualiza status da triagem
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Triagem> atualizarStatus(
+            @PathVariable Long id,
+            @RequestParam String status) {
+        return triagemRepository.findById(id)
+                .map(t -> {
+                    t.setStatus(status);
+                    triagemRepository.save(t);
+                    return ResponseEntity.ok(t);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
 
+    // Busca todas as triagens ordenadas por data
+    @GetMapping("/todas")
+    public ResponseEntity<List<Triagem>> getTodasTriagens() {
+        return ResponseEntity.ok(
+                triagemRepository.findAll()
+                        .stream()
+                        .sorted((a, b) -> b.getDataTriagem().compareTo(a.getDataTriagem()))
+                        .toList()
+        );
+    }
 
 
 }
